@@ -28,12 +28,14 @@ output$volcano <- renderPlotly({
                                                                          yes = "Down-regulated",
                                                                          no = "none"),
                                                             no = "Up-regulated"))))
+    num_selected <- nrow(df[df$threshold != "none" ,])
 
     ggplotly(ggplot(data = df, aes(x = FC, y = -log10(pvalue), color = threshold, labels = names)) +
                geom_point(size = 1.75, alpha = 0.8) +
                xlim(c(-(input$xlim), input$xlim)) +
                xlab("log2 Fold Change") +
                ylab("-log10 p-value") +
+               ggtitle(paste0(num_selected, " genes selected!")) +
                scale_y_continuous(trans = "log1p") +
                geom_vline(xintercept = -log2FC, colour = "black", linetype = "dashed") +
                geom_vline(xintercept = log2FC, colour = "black", linetype = "dashed") +
