@@ -8,8 +8,7 @@ datasetInput <- reactive({
   }
   
   else {
-    data <- readxl::read_excel(infile$datapath) %>%
-      column_to_rownames("name")
+    data <- readr::read_csv2(infile$datapath)
   }
 })
 
@@ -19,7 +18,7 @@ output$toptable <- DT::renderDataTable({
   
   datatable(datasetInput(), 
             class = 'cell-border stripe', 
-            rownames = TRUE, options(list(scrollX = TRUE)))
+            rownames = FALSE, options(list(scrollX = TRUE)))
   
 })
 

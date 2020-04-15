@@ -3,8 +3,10 @@ output$volcano <- renderPlotly({
   
   df <- datasetInput()
   
-  names <- rownames(df)
-    
+  names <- df$SymbolsA
+  
+  df <- df %>% mutate(adj.P.Val = p.adjust(P.Value, method = input$method))  
+  
   if(input$pval == "raw"){
     
     df <- data.frame(pvalue = df$P.Value, FC = round(df$logFC, 2), names = names)
@@ -17,12 +19,12 @@ output$volcano <- renderPlotly({
     
   }
   
-  log2FC <- 2^(input$log2FC)
+  log2FC <- input$log2FC
   
   df <- mutate(df, threshold = as.factor(ifelse(df$pvalue >= input$pval_cutoff,
                                                 yes = "none",
-                                                no = ifelse(df$FC < log2(log2FC),
-                                                            yes = ifelse(df$FC < -log2(log2FC),
+                                                no = ifelse(df$FC < log2FC,
+                                                            yes = ifelse(df$FC < -log2FC,
                                                                          yes = "Down-regulated",
                                                                          no = "none"),
                                                             no = "Up-regulated"))))
@@ -33,8 +35,8 @@ output$volcano <- renderPlotly({
                xlab("log2 Fold Change") +
                ylab("-log10 p-value") +
                scale_y_continuous(trans = "log1p") +
-               geom_vline(xintercept = -log2(log2FC), colour = "black", linetype = "dashed") +
-               geom_vline(xintercept = log2(log2FC), colour = "black", linetype = "dashed") +
+               geom_vline(xintercept = -log2FC, colour = "black", linetype = "dashed") +
+               geom_vline(xintercept = log2FC, colour = "black", linetype = "dashed") +
                geom_hline(yintercept = -log10(input$pval_cutoff), colour = "black", linetype = "dashed") +
                theme(legend.position = "none") +
                theme_bw() +
